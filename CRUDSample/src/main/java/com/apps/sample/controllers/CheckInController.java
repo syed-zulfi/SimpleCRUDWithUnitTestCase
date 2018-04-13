@@ -27,14 +27,14 @@ public class CheckInController {
         return rEntity;
     }
 
-    @GetMapping("/guestList")
+    @GetMapping("/guests")
     public ResponseEntity<List<Guest>> getGuests() {
         List<Guest> guestList = guestServiceImpl.getAllGuests();
         ResponseEntity rEntity = new ResponseEntity(guestList, HttpStatus.OK);
         return rEntity;
     }
 
-    @PostMapping("/createGuest")
+    @PostMapping("/guests")
     public ResponseEntity<Void> onBoardGuest(@RequestBody Guest guest, UriComponentsBuilder ucompBuilder) {
         boolean flag = guestServiceImpl.createGuest(guest);
         HttpHeaders headers = new HttpHeaders();
@@ -43,10 +43,10 @@ public class CheckInController {
         return rEntity;
     }
 
-    @DeleteMapping("/removeGuest/{id}")
+    @DeleteMapping("/guests/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable("id") String id, UriComponentsBuilder uComBuilder) {
         HttpHeaders headers = new HttpHeaders();
-        URI self = uComBuilder.path("/removeGuest/{id}").buildAndExpand(id).toUri();
+        URI self = uComBuilder.path("/guests/{id}").buildAndExpand(id).toUri();
         headers.setLocation(self);
         System.out.print(id);
         guestServiceImpl.deelteGuest(Long.parseLong(id));
@@ -54,7 +54,7 @@ public class CheckInController {
         return rEntity;
     }
 
-    @PutMapping("/update")
+    @PutMapping("/guests")
     public ResponseEntity<Guest> updateGuest(@RequestBody Guest guest) {
         guestServiceImpl.update(guest);
         return new ResponseEntity<Guest>(guest, HttpStatus.OK);

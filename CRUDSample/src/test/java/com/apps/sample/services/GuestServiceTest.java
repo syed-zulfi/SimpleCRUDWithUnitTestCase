@@ -1,6 +1,7 @@
 package com.apps.sample.services;
 
 import com.apps.sample.dao.inface.GuestRepo;
+import com.apps.sample.dao.inface.GuestRepository;
 import com.apps.sample.model.Guest;
 import com.apps.sample.services.inface.GuestService;
 import org.junit.Assert;
@@ -30,7 +31,7 @@ public class GuestServiceTest {
     GuestService guestService;
 
     @MockBean
-    GuestRepo guestRepo;
+    GuestRepository guestRepo;
 
     @Test
     public void testGetAllGuests(){
@@ -41,9 +42,10 @@ public class GuestServiceTest {
 
         List<Guest> guests = new ArrayList<Guest>();
         guests.add(guest);
-        Mockito.when(guestRepo.getGuests()).thenReturn(guests);
+        Mockito.when(guestRepo.findAll()).thenReturn(guests);
         List<Guest> retGstList = guestService.getAllGuests();
         Assert.assertArrayEquals(guests.toArray(),retGstList.toArray());
+        Mockito.verify(guestRepo,Mockito.times(1)).findAll();
     }
     @Test
     public void testCreateGuest(){
@@ -51,13 +53,15 @@ public class GuestServiceTest {
         guest.setName("AAA");
         guest.setPhone("3333");
         guest.setId(8484L);
-        Mockito.doNothing().when(guestRepo).createGuest(guest);
+        Mockito.when(guestRepo.save(guest)).thenReturn(Mockito.any(Guest.class));
         Assert.assertTrue(guestService.createGuest(guest));
+        Mockito.verify(guestRepo,Mockito.times(1)).save(guest);
     }
     @Test
     public  void testDeleteGuest(){
-        Mockito.doNothing().when(guestRepo).deleteGuest(Mockito.anyLong());
+        Mockito.doNothing().doThrow(new RuntimeException()).when(guestRepo).deleteById(Mockito.anyLong());
         Assert.assertTrue(guestService.deelteGuest(4949L));
+        Mockito.verify(guestRepo,Mockito.times(1)).deleteById(Mockito.anyLong());
     }
 
     @Test
@@ -66,9 +70,9 @@ public class GuestServiceTest {
         guest.setName("AAA");
         guest.setPhone("3333");
         guest.setId(8484L);
-        Mockito.when(guestRepo.updateGuest(guest)).thenReturn(guest);
+        Mockito.when(guestRepo.save(guest)).thenReturn(guest);
         Assert.assertTrue(guestService.update(guest));
-
+        Mockito.verify(guestRepo,Mockito.times(1)).save(guest);
 
     }
 }

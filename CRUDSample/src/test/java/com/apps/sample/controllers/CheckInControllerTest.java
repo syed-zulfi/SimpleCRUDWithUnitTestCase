@@ -58,17 +58,18 @@ public class CheckInControllerTest {
         try {
 
             String mckReqBody = new ObjectMapper().writeValueAsString(mckGuest);
-            RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/createGuest")
+            RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/guests")
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mckReqBody);
             mckGuest.setId(222L);
 
-            Mockito.when(guestService.createGuest(mckGuest)).thenReturn(false);
+            Mockito.when(guestService.createGuest(mckGuest)).thenReturn(true);
             MvcResult mvcResult = mMvc.perform(requestBuilder).andReturn();
             MockHttpServletResponse response = mvcResult.getResponse();
             Assert.assertEquals(HttpStatus.CREATED.value(),response.getStatus());
 
+            Mockito.verify(guestService,Mockito.times(1)).createGuest(Mockito.any(Guest.class));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -86,11 +87,12 @@ public class CheckInControllerTest {
 
         allGuest.add(guest);
         Mockito.when(guestService.getAllGuests()).thenReturn(allGuest);
-        RequestBuilder request = MockMvcRequestBuilders.get("/api/guestList").accept(MediaType.APPLICATION_JSON);
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/guests").accept(MediaType.APPLICATION_JSON);
         try {
             MvcResult result = mMvc.perform(request).andReturn();
             String expected = "[{\"id\":null,\"name\":\"Helloooo\",\"phone\":\"9494\"}]";
             JSONAssert.assertEquals(expected,result.getResponse().getContentAsString(),false);
+            Mockito.verify(guestService, Mockito.times(1)).getAllGuests();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,11 +100,12 @@ public class CheckInControllerTest {
     @Test
     public void deleteGuestTest(){
         Mockito.when(guestService.deelteGuest(Mockito.anyLong())).thenReturn(true);
-        RequestBuilder requestBuilder= MockMvcRequestBuilders.delete("/api/removeGuest/2772");
+        RequestBuilder requestBuilder= MockMvcRequestBuilders.delete("/api/guests/2772");
         try {
            MvcResult result= mMvc.perform(requestBuilder).andReturn();
            MockHttpServletResponse response = result.getResponse();
            Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatus());
+           Mockito.verify(guestService, Mockito.times(1)).deelteGuest(Mockito.anyLong());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,7 +121,7 @@ public class CheckInControllerTest {
 
         try {
             String input = new ObjectMapper().writeValueAsString(mckGuest);
-            RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/api/update")
+            RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/api/guests")
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(input);
@@ -126,6 +129,7 @@ public class CheckInControllerTest {
             MockHttpServletResponse response = result.getResponse();
             Assert.assertEquals(HttpStatus.OK.value(),response.getStatus());
             JSONAssert.assertEquals(input,response.getContentAsString(),false);
+            Mockito.verify(guestService,Mockito.times(1)).update(mckGuest);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         } catch (Exception e) {

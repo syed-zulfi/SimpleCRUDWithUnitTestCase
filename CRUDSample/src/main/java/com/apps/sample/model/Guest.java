@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Guest")
@@ -37,5 +38,21 @@ public class Guest implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Guest guest = (Guest) o;
+        return Objects.equals(id, guest.id) &&
+                Objects.equals(name, guest.name) &&
+                Objects.equals(phone, guest.phone);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, name, phone);
     }
 }
