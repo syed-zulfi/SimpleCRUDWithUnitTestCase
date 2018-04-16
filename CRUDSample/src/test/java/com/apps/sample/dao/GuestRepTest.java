@@ -18,44 +18,56 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+
 public class GuestRepTest {
     @Autowired
     TestEntityManager entityManager;
     @Autowired
 GuestRepository guestRepo;
     @Test
-    public void createAndListGuesTest(){
+    public void createGuestTest(){
         Guest guest = new Guest();
         guest.setName("AADDDDEEE");
         guest.setPhone("8383838");
-        guestRepo.save(guest);
-        List<Guest> guests = new ArrayList<Guest>();
-        guestRepo.findAll().forEach(guests::add);
-        Assert.assertTrue(guests.size()>2);
+        guest = guestRepo.save(guest);
+       Assert.assertNotNull(entityManager.find(Guest.class,guest.getId()));
 
     }
     @Test
     public void deleteGuest(){
-        long id = 10002;
-        guestRepo.deleteById(id);
-        List<Guest> guests = new ArrayList<Guest>();
+        Guest guest =new Guest();
+        guest.setName("HHHHHHH");
+        guest.setPhone("939393");
+       guest = entityManager.persist(guest);
+        Assert.assertNotNull(guestRepo.findById(guest.getId()).get());
+        guestRepo.deleteById(guest.getId());
+        Assert.assertFalse(guestRepo.findById(guest.getId()).isPresent());
+     }
+     @Test
+     public void listAllGuests(){
+        Guest guest = new Guest();
+        guest.setName("BBBBBBB");
+        guest.setPhone("8484848");
+        entityManager.persist(guest);
+        List<Guest> guestList = new ArrayList<Guest>();
+        guestRepo.findAll().forEach(guestList::add);
+        Assert.assertTrue(guestList.size()>2);
 
-        guestRepo.findAll().forEach(guests::add);
-        Assert.assertTrue(guests.size()==1);
+     }
 
-    }
     @Test
     public void updateGuest(){
         Guest guest = new Guest();
         guest.setName("AADDDDEEE");
         guest.setPhone("8383838");
-        guest.setId(10001L);
 
-        guestRepo.save(guest);
-        Guest updtGuest = guestRepo.findById(10001L).get();
-        Assert.assertTrue(guest.getName().equals(updtGuest.getName()));
-        Assert.assertTrue(guest.getPhone().equals(updtGuest.getPhone()));
-        Assert.assertEquals(guest.getId(),updtGuest.getId());
+       Long id = (Long) entityManager.persistAndGetId(guest);
 
+       Guest updtGuest = entityManager.find(Guest.class,id);
+       updtGuest.setName("BBBBBB");
+       updtGuest.setPhone("34433344");
+       guestRepo.save(updtGuest);
+
+       Assert.assertTrue(guestRepo.findById(id).get().getName().equals(updtGuest.getName()));
     }
 }

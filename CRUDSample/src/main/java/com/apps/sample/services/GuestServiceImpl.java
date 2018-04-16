@@ -32,6 +32,7 @@ public class GuestServiceImpl implements GuestService {
     public synchronized boolean createGuest(Guest guest) {
         //guestRepo.createGuest(guest);
         guestRepository.save(guest);
+        System.out.println(guest.toString());
         return true;
     }
 

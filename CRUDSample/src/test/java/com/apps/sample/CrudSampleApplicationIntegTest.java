@@ -33,7 +33,7 @@ public class CrudSampleApplicationIntegTest {
         guest.setName("AAAA");
         guest.setPhone("44433434");
         HttpEntity<Guest> entity = new HttpEntity<Guest>(guest,headers);
-        String URL = createURI("/api/createGuest");
+        String URL = createURI("/api/guests");
         ResponseEntity rsEntity = tRestTmplt.exchange(URL,HttpMethod.POST,entity,String.class);
         Assert.assertEquals(HttpStatus.CREATED.value(),rsEntity.getStatusCodeValue());
     }
@@ -41,7 +41,7 @@ public class CrudSampleApplicationIntegTest {
     @Test
     public void testGetGuestList(){
         HttpEntity entity = new HttpEntity(null,headers);
-        String URL = createURI("/api/guestList");
+        String URL = createURI("/api/guests");
         ResponseEntity<List> rsEntity = tRestTmplt.exchange(URL,HttpMethod.GET, entity,List.class);
         List<Guest> guests = rsEntity.getBody();
         Assert.assertEquals(guests.size(),2);
@@ -49,13 +49,13 @@ public class CrudSampleApplicationIntegTest {
     @Test
     public void testDeleteGuest(){
         HttpEntity entity = new HttpEntity(null,headers);
-        String URL = createURI("/api/removeGuest/10001");
+        String URL = createURI("/api/guests/10001");
         ResponseEntity resEntity = tRestTmplt.exchange(URL,HttpMethod.DELETE, entity,String.class);
         Assert.assertEquals(HttpStatus.NO_CONTENT.value(),resEntity.getStatusCodeValue());
     }
     @Test
     public void testUpdateGuest(){
-        String URL = createURI("/api/update");
+        String URL = createURI("/api/guests");
         Guest guest = new Guest();
         guest.setId(10002L);
         guest.setName("GGGGG");
@@ -66,6 +66,7 @@ public class CrudSampleApplicationIntegTest {
         Assert.assertEquals(guest.getId(),resGuest.getId());
         Assert.assertTrue(guest.getName().equals(resGuest.getName()));
         Assert.assertTrue(guest.getPhone().equals(resGuest.getPhone()));
+
     }
 
 
